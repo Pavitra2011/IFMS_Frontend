@@ -1,0 +1,23 @@
+.container {
+  padding: 20px;
+}
+
+.content{
+  margin-bottom: 20px;
+  color: orangered;
+}
+.content2{
+  color: gray;
+  text-decoration: underline;
+}
+
+.search-container {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0;
+}
+
+table {
+  width: 100%;
+  margin-top: 20px;
+}
