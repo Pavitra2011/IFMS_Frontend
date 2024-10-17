@@ -1,0 +1,105 @@
+<div class="task-container">
+  <h2>Task Management</h2>
+   <!-- Add Task Form -->
+    Inside Task add form
+    <form [formGroup]="createTaskForm" (ngSubmit)="onCreateTask()"  *ngIf="createTaskForm">
+    <div class="form-group">
+      <label for="taskName" class="form-label">Task Name</label>
+      <input
+        type="text"
+        id="taskName"
+        class="form-control"
+        formControlName="taskName"
+      />
+    </div>
+
+    <div class="mb-3">
+      <label for="description" class="form-label">Description</label>
+      <textarea
+        id="description"
+        class="form-control"
+        formControlName="description"
+        rows="3"
+      ></textarea>
+    </div>
+    <div class="mb-3">
+      <label for="priority" class="form-label">Priority</label>
+      <select id="priority" class="form-select" formControlName="priority">
+        <option value="Low">Low</option>
+        <option value="Medium">Medium</option>
+        <option value="High">High</option>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label for="status" class="form-label">Status</label>
+      <select id="status" class="form-select" formControlName="status">
+        <option value="Low">Pending</option>
+        <option value="Medium">In Progress</option>
+        <option value="High">Completed</option>
+      </select>    
+      <div class="form-group">
+        <label for="startDate" class="form-label">Start Date</label>
+        <input
+          type="date"
+          id="startDate"
+          class="form-control"
+          formControlName="startDate"
+        />
+      </div>
+      <div class="form-group">
+        <label for="endDate" class="form-label">End Date</label>
+        <input
+          type="date"
+          id="endDate"
+          class="form-control"
+          formControlName="endDate"
+        />
+      </div>
+      <div class="form-group">
+        <label for="projectId" class="form-label">Project Id</label>
+        <input
+          type="number"
+          id="projectId"
+          class="form-control"
+          formControlName="projectId"
+        />
+      </div>
+      <div class="form-group">
+        <label for="sprintId" class="form-label">Sprint Id</label>
+        <input
+          type="number"
+          id="sprintId"
+          class="form-control"
+          formControlName="sprintId"
+        />
+      </div>
+    </div>
+    <button type="submit" class="add-task-btn">Add Task</button>
+  </form>
+  
+  <!-- Task List -->
+   <!--
+  <div class="task-list">
+    <h3>Tasks</h3>
+    <ul>
+      Inside ul
+      <li *ngFor="let task of tasks">
+        <div class="task-item">
+          <h4>{{ task.taskName }}</h4>
+          <p>{{ task.description }}</p>
+          <span class="status">{{ task.status }}</span>
+          <button class="edit-btn" (click)="onUpdateTask(task)">Edit</button>
+          <button class="delete-btn" (click)="onDeleteTask(task.taskId)">Delete</button> 
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>
+
+  <ul>
+    <li *ngFor="let task of tasks">
+      {{ task.description }} - <strong>{{ task.status }}</strong>
+    </li>
+  </ul>
+</div>
+-->
