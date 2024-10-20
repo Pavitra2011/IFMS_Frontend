@@ -1,0 +1,58 @@
+<div class="task-container">
+  <!--<h3>Task List</h3>-->
+  <form [formGroup]="createTaskForm" (ngSubmit)="onCreateTask()">
+    <input formControlName="taskName" class="form-control" placeholder="Task Name" required>
+    <input formControlName="description" class="form-control" placeholder="Description">
+    <select formControlName="priority" class="form-control" required>
+      <option *ngFor="let priority of priorities" [value]="priority">{{ priority }}</option>
+    </select>
+    <select formControlName="status" class="form-control" required>
+      <option *ngFor="let status of taskStatuses" [value]="status">{{ status }}</option>
+    </select>
+    <div>
+      <button type="submit" class="btn btn-primary">Create Task</button>
+    </div>
+  </form>
+
+  <ul class="list-group mt-3">
+    <li *ngFor="let task of tasks" class="list-group-item">
+      <strong>{{ task.taskName }}</strong> - {{ task.description }} (Status: {{ task.status }})<br />
+      <small>Assigned to: {{ task.assignedToUserName }} | Priority: {{ task.priority }}</small><br />
+      <small>Start Date: {{ task.startDate | date }} | End Date: {{ task.endDate | date }}</small>
+      <div class="task-actions">
+        <button (click)="editTask(task)" class="btn btn-warning btn-sm">Edit</button>
+        <button (click)="onDeleteTask(task.taskId)" class="btn btn-danger btn-sm ml-2">Delete</button>
+      </div>
+    </li>
+  </ul>
+
+  <!-- Edit Task Modal -->
+  <div class="modal" tabindex="-1" role="dialog" *ngIf="showEditModal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Task</h5>
+          <button type="button" class="close" (click)="closeEditModal()">
+            <span>&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="editTaskForm" (ngSubmit)="onEditTask()">
+            <input formControlName="taskName" class="form-control" placeholder="Task Name" required>
+            <input formControlName="description" class="form-control" placeholder="Description">
+            <select formControlName="priority" class="form-control" required>
+              <option *ngFor="let priority of priorities" [value]="priority">{{ priority }}</option>
+            </select>
+            <select formControlName="status" class="form-control" required>
+              <option *ngFor="let status of taskStatuses" [value]="status">{{ status }}</option>
+            </select>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Save Changes</button>
+              <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
