@@ -90,17 +90,17 @@ createUser(user: UserManagementDomain): Observable<UserManagementDomain> {
       console.error('Error creating user', error);
       return throwError(error);
     })
-  );
+  ); 
+}
+// Fetch project managers from the backend
+getProjectManagers(): Observable<UserManagementDomain[]> {
+  return this.http.get<UserManagementDomain[]>(`${this.apiUrl}/project-managers`);
+}
 }
 
-  
+ 
 
 
-
-
-
-
-}
  // private apiUrl = 'http://localhost:8080/api/users/searchUserByName'; 
 
   // searchUsersByName(userName: string): Observable<UserManagementDomain[]> {

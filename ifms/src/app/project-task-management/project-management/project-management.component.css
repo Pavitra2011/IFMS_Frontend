@@ -15,22 +15,30 @@ body {
   gap: 20px;
 }
 
-/* Upper Half: Project and Task Side-by-Side */
+/* Upper Half: Project and Task Management Side-by-Side */
 .upper-half {
   display: flex;
-  justify-content: space-between;
-  gap: 20px;
+  gap: 20px; /* Space between the two containers */
 }
 
-.project-container, .task-container {
+.project-container, 
+.task-container {
   background-color: #fff;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  width: 48%;
+  flex: 1; /* Allow both containers to grow equally */
 }
 
-.project-container h2, .task-container h2 {
+/* Ensure they take up the same height */
+.project-container, 
+.task-container {
+  min-width: 0; /* Prevents flex items from overflowing */
+}
+
+/* Header styles for project and task containers */
+.project-container h2, 
+.task-container h2 {
   border-bottom: 2px solid #007bff;
   padding-bottom: 5px;
 }
@@ -125,4 +133,11 @@ button:hover {
 
 .mt-4 {
   margin-top: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .upper-half {
+    flex-direction: column; /* Stack project and task management on small screens */
+  }
 }

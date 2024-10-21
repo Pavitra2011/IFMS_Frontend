@@ -26,7 +26,7 @@ export class TaskManagementService {
   // Create a new task
   createTask(task: Task): Observable<Task> {
     console.log("Inside Create Task");
-    console.log("task.sprint:"+`$task.sprintId`);
+    //console.log("task.sprint:"+`$task.sprintId`);
     return this.http.post<Task>(this.apiUrl, task)
       .pipe(
         catchError(this.handleError)
