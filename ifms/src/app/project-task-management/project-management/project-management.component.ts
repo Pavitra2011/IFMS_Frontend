@@ -2,16 +2,21 @@
 
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ProjectManagementService } from '../services/project-management.service';
-//import { SprintManagementService } from '../../sprint-management/services/sprint-management.service';
+
 import { Task } from '../model/task.model';
 import { TaskManagementService } from '../services/task-management.service';
-//import {TaskManagementComponent} from '../task-management/task-management.component'
+
 import { catchError } from 'rxjs/internal/operators/catchError';
 import { Observable, of, tap } from 'rxjs';
 import { UserManagementDomain } from '../../model/UserManagementDomain';
 import { UserserviceService } from '../../userservice.service';
 import { Project } from '../model/project.model';
+import { SprintManagementService } from '../services/sprint-management.service';
+import { SprintManagementComponent } from '../sprint-management/sprint-management.component';
+import { Sprint } from '../model/sprint.model';
 
 @Component({
   selector: 'app-project-management',
@@ -19,30 +24,50 @@ import { Project } from '../model/project.model';
   styleUrls: ['./project-management.component.css'],
 })
 export class ProjectManagementComponent implements OnInit {
+openTaskList(arg0: any) {
+throw new Error('Method not implemented.');
+}
+
+  refreshProjects() {
+    
+    this.getProjects(); 
+    this.snackBar.open('Refreshed Project List', 'Close', {
+      duration: 3000,
+      horizontalPosition: 'center',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-success'], // Optional: Custom styling
+    });
+  }
 //[x: string]: any;
   createProjectForm!: FormGroup;
   users: UserManagementDomain[] = [];
   selectedUserNames: string[] = []; // Array to hold selected user names
   projects: any[] = [];
   tasks: any[] = [];
-  //sprints: any[] = [];
+  sprints: any[] = [];
   assignedUserIds: any[] = [];
   assignedUserNames: any[] = [];
+  sprintIds: any[]=[];
+  sprintNames: any[]=[];
   projectStatuses = ['ON_HOLD', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'];
   selectedProject: any;
   selectedProjectId: number = 0;  // Hold the selected projectId
   errorMessage: string = '';
   isLoading: boolean = false;
+  showSprintForm = false; // Track whether to show sprint form
   http: any;
   router: any;
   projectId: number=0; // Define projectId here
+  filteredSprints: Sprint[] = []; // Array to hold sprints filtered by selected project
   
 constructor(
   private fb: FormBuilder,
   private projectService: ProjectManagementService,
- // private sprintService: SprintManagementService, // Inject your sprint service
+  private sprintService: SprintManagementService, // Inject your sprint service
  private taskService: TaskManagementService,
- private userService: UserserviceService
+ private userService: UserserviceService,
+ private dialog: MatDialog,
+ private snackBar: MatSnackBar
 ) {}
 ngOnInit(): void {
   this.createProjectForm = this.fb.group({
@@ -54,12 +79,12 @@ ngOnInit(): void {
     assignedUserIds:[[]],
 
     description: [''],
-    //sprintIds: [[], Validators.required],
+    
   });
   
   this.getProjects();
   this.loadProjectManagers();
-  // Subscribe to changes on assignedUserIds control
+  
   // Subscribe to changes on assignedUserIds control
   this.createProjectForm.get('assignedUserIds')?.valueChanges.subscribe(selectedIds => {
   if (selectedIds) { // Ensure selectedIds is not null
@@ -70,6 +95,7 @@ ngOnInit(): void {
   }); 
   //this.fetchSprints();
 }
+  
 onCreateProject() {
   console.log("inside onCreateProject");
   console.log(this.createProjectForm.valid);
@@ -83,46 +109,59 @@ onCreateProject() {
         console.log("Fetched Projects:"+this.getProjects());
         this.createProjectForm.reset();
         this.isLoading = false;
+        this.snackBar.open('Project Created Successfully!', 'Close', {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'top',
+        });
       },
       (error) => {
         this.errorMessage = error;
         this.isLoading = false;
       }
+      
     );
   } else {
     this.errorMessage = 'Please fill in all required fields.';
   }
 }
-// Get all projects
-/*
+
 getProjects() {
   this.isLoading = true;
-  this.projectService.getProjects().subscribe(
-    (data) => {
-      this.projects = data;
-      this.isLoading = false;
-    },
-    (error) => {
-      this.errorMessage = error;
-      this.isLoading = false;
-    }
-  );
-}
-*/
-getProjects() {
-  this.isLoading = true;
+
+  // Define the default sprint
+  const defaultSprint = {
+    sprintId: 0, // Assign a unique ID for the default sprint
+    sprintName: 'Backlog Sprint',
+    startDate: new Date(), // Set to current date
+    endDate: new Date(new Date().setDate(new Date().getDate() + 14)), // 2 weeks from now
+  };
+
   this.projectService.getProjects().subscribe(
     (projects: Project[]) => {
       console.log('Fetched Projects:', projects); // Verify project data here
+      
       this.projects = projects.map((project: Project) => {
         // Map assigned user IDs to user names
-        console.log("project.assignedUserIds:"+project.assignedUserIds);
-        project.assignedUserNames = project.assignedUserIds
+        console.log("project.assignedUserIds:", project.assignedUserIds);
+
+        // Check if assignedUserIds is not null or undefined
+        project.assignedUserNames = (project.assignedUserIds ?? [])
           .map((id: number) => this.users.find(user => user.userId === id)?.userName)
           .filter((name): name is string => Boolean(name)); // Type guard to keep only strings
-        console.log("project.assignedUserNames:"+project.assignedUserNames);
+
+        console.log("project.assignedUserNames:", project.assignedUserNames);
+
+        // Add default sprint to the project
+        project.sprintIds = [...(project.sprintIds ?? []), defaultSprint.sprintId];
+        project.sprintNames = [...(project.sprintNames ?? []), defaultSprint.sprintName];
+
+        // Optionally, you can also attach the default sprint object to the project
+        project.defaultSprint = defaultSprint;
+
         return project;
       });
+
       this.isLoading = false;
     },
     (error) => {
@@ -131,6 +170,9 @@ getProjects() {
     }
   );
 }
+
+
+
 selectProject(project: any) {
   this.selectedProject = project; // Set the selected project
   console.log('Selected Project:', this.selectedProject); // Check what project is selected
@@ -186,7 +228,7 @@ viewTasks(project: any) {
     }
   }
 }
-// Delete project
+/* Delete project
 deleteProject(projectId: number) {
   this.isLoading = true;
   this.projectService.deleteProject(projectId).subscribe(
@@ -200,7 +242,8 @@ deleteProject(projectId: number) {
       this.isLoading = false;
     }
   );
-}
+}*/
+
 onTaskCreated(newTask: Task): void {
   if (this.selectedProject) {
     // Check if tasks property exists
@@ -214,6 +257,57 @@ onTaskCreated(newTask: Task): void {
   }
 }
 
+ // Handle Sprint Creation Event
+ onSprintCreated(sprintData: any): void {
+  if (this.selectedProject) {
+    const sprint = { ...sprintData, projectId: this.selectedProject.projectId };
+    console.log('Sprint created:', sprint);
+    this.sprints.push(sprint); // Add sprint to the list
+  }
+}
+/*
+openSprintDialog(): void {
+  const dialogRef = this.dialog.open(SprintManagementComponent, {
+    width: '400px',
+  });
+
+  // Handle the dialog result
+  dialogRef.afterClosed().subscribe((sprintData) => {
+    if (sprintData) {
+      this.onSprintCreated(sprintData); // Handle the sprint creation
+    }
+  });
+}*/
+
+openSprintDialog(project: { projectId: number; projectName: string }): void {
+  console.log('Selected Project:', project);
+
+  if (!project) {
+    console.error('No project selected.');
+    return;
+  }
+
+  const dialogRef = this.dialog.open(SprintManagementComponent, {
+    width: '400px',
+    data: {
+      projectId: project.projectId,
+      projectName: project.projectName,
+    },
+  });
+
+  dialogRef.afterClosed().subscribe(result => {
+    console.log('Dialog closed:', result);
+    if (result) {
+     
+        this.onSprintCreated(result); // Handle the sprint creation
+      
+      // Handle the returned result, e.g., refresh the data or notify user
+      console.log('Sprint data:', result);
+    } else {
+      console.log('No data returned from dialog.');
+    }
+  });
+}
 
 onTaskUpdated(): void {
   if (this.selectedProject) {
@@ -229,11 +323,13 @@ onTaskDeleted(taskId: number): void {
   });
 }
 
+
 // Load project managers on component initialization
 loadProjectManagers(): void {
   this.userService.getProjectManagers().subscribe(
-    (data) => {
+    (data) => { 
       this.users = data;
+      console.log('Project Managers:', this.users); // This will log the entire array of project managers
       console.log('Project Managers:', this.users);
     },
     (error) => {
@@ -241,5 +337,30 @@ loadProjectManagers(): void {
     }
   );
 }
+/*
+loadSprints() {
+  this.projectService.getSprints().subscribe((data) => (this.sprints = data));
+}*/
+
+ // Method to load sprints for the selected project
+ loadSprints(): void {
+  if (this.selectedProject?.projectId) {
+    this.sprintService.getSprintsByProject(this.selectedProject.projectId).subscribe(
+      (sprints) => {
+        this.sprints = sprints;
+        console.log('Sprints loaded:', sprints);
+      },
+      (error) => {
+        console.error('Failed to load sprints', error);
+        this.snackBar.open('Failed to load sprints!', 'Close', {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'top',
+        });
+      }
+    );
+  }
+}
+
 }
 

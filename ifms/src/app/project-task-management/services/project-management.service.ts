@@ -57,6 +57,10 @@ export class ProjectManagementService {
       .pipe(catchError(this.handleError));
   }
 
+  getSprints(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/sprints`);
+  }
+
   // Get sprints by project ID
   getSprintsByProject(projectId: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/sprints/project/${projectId}`, { headers: this.getHeaders() })

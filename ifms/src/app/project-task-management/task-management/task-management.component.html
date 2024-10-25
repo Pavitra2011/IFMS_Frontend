@@ -32,6 +32,23 @@
         <input type="date" formControlName="endDate" class="form-control" placeholder="End Date" required />
       </div>
       
+      <!-- Project Selection Field -->
+      <div class="mt-2">
+        <select formControlName="projectId" class="form-control" required>
+          <option value="" disabled selected>Select Project</option>
+          <option *ngFor="let project of projects" [value]="project.projectId">{{ project.projectName }}</option>
+        </select>
+      </div>
+
+ 
+      <!-- Sprint Selection Field -->
+      <div class="mt-2">
+        <select formControlName="sprintId" class="form-control" required>
+          <option value="" disabled selected>Select Sprint</option>
+          <option *ngFor="let sprint of filteredSprints" [value]="sprint.sprintId">{{ sprint.sprintName }}</option>
+        </select>
+      </div>
+
       <!-- Assigned To User Field 
       <div class="mt-2">
         <select formControlName="assignedToUserName" class="form-control">
@@ -88,6 +105,22 @@
               <option value="" disabled selected>Select Status</option>
               <option *ngFor="let status of taskStatuses" [value]="status">{{ status }}</option>
             </select>
+            <!-- Project Selection Field -->
+        <!-- Project Selection Field -->
+    <div class="mt-2">
+      <label for="projectId">Project ID:</label>
+      <input id="projectId" [value]="selectedTask?.projectId" readonly class="form-control" />
+    </div>
+
+
+          <!-- Sprint Selection Field -->
+          <div class="mt-2">
+            <select formControlName="sprintId" class="form-control" required>
+              <option value="" disabled selected>Select Sprint</option>
+              <option *ngFor="let sprint of sprints" [value]="sprint.sprintId">{{ sprint.sprintName }}</option>
+            </select>
+          </div>
+
             <div class="modal-footer">
               <button type="submit" class="btn btn-primary">Save Changes</button>
               <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Cancel</button>

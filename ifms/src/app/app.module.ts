@@ -38,6 +38,9 @@ import { UserViewComponent } from './user-view/user-view.component';
 import { ProjectManagementComponent } from './project-task-management/project-management/project-management.component';
 import { TaskManagementComponent } from './project-task-management/task-management/task-management.component';
 import { CommonModule } from '@angular/common';
+import { SprintManagementComponent } from './project-task-management/sprint-management/sprint-management.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule, MatOptionModule, NativeDateAdapter } from '@angular/material/core';
 
 //import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
@@ -61,7 +64,8 @@ import { CommonModule } from '@angular/common';
     UserCreateComponent,
     UserViewComponent,
     ProjectManagementComponent,
-    TaskManagementComponent
+    TaskManagementComponent,
+    SprintManagementComponent
     
    
   ],
@@ -69,6 +73,7 @@ import { CommonModule } from '@angular/common';
     BrowserModule,
     FormsModule,
     BrowserAnimationsModule,
+    MatDatepickerModule,
     MatToolbarModule,
     MatButtonModule,
     MatTableModule,
@@ -82,10 +87,14 @@ import { CommonModule } from '@angular/common';
     MatIconModule,
     ReactiveFormsModule,
     RouterModule,
-    CommonModule
+    CommonModule,
+    MatNativeDateModule, // Import MatNativeDateModule,
+    MatOptionModule
     
   ],
-  providers: [UserserviceService, provideAnimationsAsync(), provideAnimationsAsync('noop')],
+  providers: [UserserviceService, provideAnimationsAsync(), provideAnimationsAsync('noop'),
+    {provide: NativeDateAdapter, useClass: NativeDateAdapter }
+  ],
   bootstrap: [AppComponent],
 
 })
